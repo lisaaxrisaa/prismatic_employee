@@ -30,35 +30,29 @@ router.post('/employees', async (req, res) => {
     if (newEmployee) {
       res.status(201).json(newEmployee);
     } else {
-      res.status(201).json('User not added');
+      res.status(201).json('Employee not added');
     }
   } catch (error) {
     res.status(400).send(error);
   }
 });
 
-// router.post('/employees', async (req, res) => {
-//   try {
-//     const { name } = req.body;
-
-//     // Validate input
-//     if (!name || typeof name !== 'string') {
-//       return res.status(400).json({ error: 'Invalid or missing "name" field' });
-//     }
-
-//     // Create a new employee
-//     const newEmployee = await prisma.employee.create({
-//       data: {
-//         name,
-//       },
-//     });
-
-//     // Send the newly created employee with status 201
-//     res.status(201).json(newEmployee);
-//   } catch (error) {
-//     console.error('Error creating employee:', error);
-//     res.status(500).json({ error: 'Internal Server Error' }); // Handle unexpected server errors
-//   }
-// });
+router.get('/employees/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await prisma.employee.findFirst({
+      where: {
+        id,
+      },
+    });
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      res.status(404).json('Employee not found');
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 module.exports = router;
