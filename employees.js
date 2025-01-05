@@ -55,4 +55,39 @@ router.get('/employees/:id', async (req, res) => {
   }
 });
 
+router.put('/employees/:id', async (req, res) => {
+  const id = req.params.id;
+  const { name } = req.body;
+  if (!name) {
+    return res.status(400).json({ error: 'Invalid or missing "name" field' });
+  }
+  try {
+    const result = await prisma.employee.update({
+      where: { id },
+      data: { name },
+    });
+    res.status(200).json(result);
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Employee not found' });
+    }
+  }
+});
+
+router.delete('/employees/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await prisma.employee.delete({
+      where: {
+        id,
+      },
+    });
+    res.status(204).json(result);
+  } catch (error) {
+    if (error.code === 'P2025') {
+      res.status(404).json({ error: 'Employee not found' });
+    }
+  }
+});
+
 module.exports = router;
